@@ -1,12 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
-    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
     }
 
     lintOptions {
@@ -23,11 +24,8 @@ android {
             // aidl.srcDirs = ['src']
             // renderscript.srcDirs = ['src']
         }
-
-        androidTest.setRoot('tests')
     }
 }
 
 dependencies {
 }
-apply from: './gradle-mvn-push.gradle'
