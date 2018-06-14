@@ -32,6 +32,7 @@ public class PtrFrameLayout extends ViewGroup {
     private static byte FLAG_ENABLE_NEXT_PTR_AT_ONCE = 0x01 << 2;
     private static byte FLAG_PIN_CONTENT = 0x01 << 3;
     private static byte MASK_AUTO_REFRESH = 0x03;
+
     protected View mContent;
     // optional config for define header and content in xml file
     private int mHeaderId = 0;
@@ -114,7 +115,7 @@ public class PtrFrameLayout extends ViewGroup {
     protected void onFinishInflate() {
         final int childCount = getChildCount();
         if (childCount > 2) {
-            throw new IllegalStateException("PtrFrameLayout only can host 2 elements");
+            throw new IllegalStateException("PtrFrameLayout can only contains 2 children");
         } else if (childCount == 2) {
             if (mHeaderId != 0 && mHeaderView == null) {
                 mHeaderView = findViewById(mHeaderId);
@@ -184,7 +185,7 @@ public class PtrFrameLayout extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        if (DEBUG && DEBUG_LAYOUT) {
+        if (isDebug()) {
             PtrCLog.d(LOG_TAG, "onMeasure frame: width: %s, height: %s, padding: %s %s %s %s",
                     getMeasuredHeight(), getMeasuredWidth(),
                     getPaddingLeft(), getPaddingRight(), getPaddingTop(), getPaddingBottom());
@@ -200,7 +201,7 @@ public class PtrFrameLayout extends ViewGroup {
 
         if (mContent != null) {
             measureContentView(mContent, widthMeasureSpec, heightMeasureSpec);
-            if (DEBUG && DEBUG_LAYOUT) {
+            if (isDebug()) {
                 ViewGroup.MarginLayoutParams lp = (MarginLayoutParams) mContent.getLayoutParams();
                 PtrCLog.d(LOG_TAG, "onMeasure content, width: %s, height: %s, margin: %s %s %s %s",
                         getMeasuredWidth(), getMeasuredHeight(),
@@ -230,35 +231,41 @@ public class PtrFrameLayout extends ViewGroup {
     }
 
     private void layoutChildren() {
-        int offsetX = mPtrIndicator.getCurrentPosY();
+        int offset = mPtrIndicator.getCurrentPosY();
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
 
         if (mHeaderView != null) {
             MarginLayoutParams lp = (MarginLayoutParams) mHeaderView.getLayoutParams();
             final int left = paddingLeft + lp.leftMargin;
-            final int top = paddingTop + lp.topMargin + offsetX - mHeaderHeight;
+            // enhance readability(header is layout above screen when first init)
+            final int top = -(mHeaderHeight - paddingTop - lp.topMargin - offset);
             final int right = left + mHeaderView.getMeasuredWidth();
             final int bottom = top + mHeaderView.getMeasuredHeight();
             mHeaderView.layout(left, top, right, bottom);
-            if (DEBUG && DEBUG_LAYOUT) {
+            if (isDebug()) {
                 PtrCLog.d(LOG_TAG, "onLayout header: %s %s %s %s", left, top, right, bottom);
             }
         }
         if (mContent != null) {
             if (isPinContent()) {
-                offsetX = 0;
+                offset = 0;
             }
             MarginLayoutParams lp = (MarginLayoutParams) mContent.getLayoutParams();
             final int left = paddingLeft + lp.leftMargin;
-            final int top = paddingTop + lp.topMargin + offsetX;
+            final int top = paddingTop + lp.topMargin + offset;
             final int right = left + mContent.getMeasuredWidth();
             final int bottom = top + mContent.getMeasuredHeight();
-            if (DEBUG && DEBUG_LAYOUT) {
+            if (isDebug()) {
                 PtrCLog.d(LOG_TAG, "onLayout content: %s %s %s %s", left, top, right, bottom);
             }
             mContent.layout(left, top, right, bottom);
         }
+    }
+
+    @SuppressWarnings({"PointlessBooleanExpression", "ConstantConditions"})
+    private boolean isDebug() {
+        return DEBUG && DEBUG_LAYOUT;
     }
 
     public boolean dispatchTouchEventSupper(MotionEvent e) {
@@ -890,7 +897,7 @@ public class PtrFrameLayout extends ViewGroup {
 
     @Override
     protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-        return p instanceof LayoutParams;
+        return p != null && p instanceof LayoutParams;
     }
 
     @Override

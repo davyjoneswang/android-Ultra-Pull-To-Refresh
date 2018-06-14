@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+
 import in.srain.cube.image.CubeImageView;
 import in.srain.cube.image.ImageLoader;
 import in.srain.cube.image.ImageLoaderFactory;
@@ -55,9 +56,9 @@ public class WithGridView extends TitleBaseFragment {
             }
         });
 
-        mAdapter = new ListViewDataAdapter<JsonData>(new ViewHolderCreator<JsonData>() {
+        mAdapter = new ListViewDataAdapter<>(new ViewHolderCreator<JsonData>() {
             @Override
-            public ViewHolderBase<JsonData> createViewHolder(int position) {
+            public ViewHolderBase<JsonData> createViewHolder() {
                 return new ViewHolder();
             }
         });
