@@ -58,7 +58,7 @@ public class WithGridView extends TitleBaseFragment {
 
         mAdapter = new ListViewDataAdapter<>(new ViewHolderCreator<JsonData>() {
             @Override
-            public ViewHolderBase<JsonData> createViewHolder() {
+            public ViewHolderBase<JsonData> createViewHolder(int position) {
                 return new ViewHolder();
             }
         });

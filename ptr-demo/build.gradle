@@ -45,4 +45,5 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
     implementation project(':ptr-lib')
     implementation project(':core')
+    compile project(path: ':core')
 }
